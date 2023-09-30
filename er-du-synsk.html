@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="denne-mappen-ble-litt-roert/er-du-synsk.css">
+    <title>Er du synsk?</title>
+</head>
+<body>
+
+    <header>
+        <h1 id="tittel">Er du synsk?</h1>
+    </header>
+
+    <div id="velg-vansklighets-grad">
+        <p>Velg vanskelighetsgrad</p>
+        <div>
+            <input id="easy" type="button" value="Easy">
+            <input id="normal" type="button" value="Normal">
+            <input id="hard" type="button" value="Hard">
+            <input 
+                id="custom" 
+                type="number" 
+                placeholder="Oppgi antall Liv og trykk Enter" 
+                style="width: 200px;"
+                autocomplete="off">
+            <br><br> <!-- lager luft mellom vansklighetsgradboksene og valgboksene-->
+        </div>
+    </div>
+
+    <section id="sectionId">
+        <div id="box1-div">Denne?</div>
+        <div id="box2-div">Eller denne?</div>
+    </section>
+
+    <div id="number-of-lives-div">
+        <!-- For å sette antall liv, før noe er trykket på (Default antall liv)-->
+        <img src="images/Heart.png" alt="Liv">
+        <img src="images/Heart.png" alt="Liv">
+        <img src="images/Heart.png" alt="Liv">
+        <img src="images/Heart.png" alt="Liv">
+        <img src="images/Heart.png" alt="Liv">
+    </div>
+
+    <div id="number-of-right-answers-div">
+        <p>Antall riktige: 0</p>
+    </div>
+
+    <div id="number-of-wrong-answers-div">
+        <p>Antall feil: 0</p>
+    </div>
+
+    <div id="output-div">
+        <h4>Regler:</h4>
+        <li>For å vinne må du gjette riktig boks 10 ganger</li>
+        <li>Du mister 1 liv hver gang du velger feil boks</li>
+        <li>Hvis du har mistet alle livene dine, taper du</li>
+        <li>Hvis du kommer opp i 3, 5, og 7 poeng får du 1 liv ekstra</li>
+        <li>Velg vanskelighetsgrad og/eller klikk på en av boksene for å begynne spillet</li>
+    </div>
+
+    <script>
+
+        //Orginale HTML referanser
+        const tittel = document.getElementById("tittel");
+        const box1 = document.getElementById("box1-div");
+        const box2 = document.getElementById("box2-div");
+        const numberOfLives = document.getElementById("number-of-lives-div");
+        const numberOfRightAnswares = document.getElementById("number-of-right-answers-div");
+        const numberOfWrongAnswares = document.getElementById("number-of-wrong-answers-div");
+        const output = document.getElementById("output-div");
+
+        //Ekstra HTML referanser
+        const easy = document.getElementById("easy");
+        const normal = document.getElementById("normal");
+        const hard = document.getElementById("hard");
+        const custom = document.getElementById("custom");
+        const velgVansklighetsGrad = document.getElementById("velg-vansklighets-grad");
+
+        //CSS referanse for å fjærne bokser på vinn og tap skjerm
+        const killCSS = document.getElementById("sectionId");
+
+        //Lyd referanser
+        const looseLifeSound = new Audio('sound/minecraft_steve_oof.mp3');
+        const winGameSound = new Audio('sound/microsoft_spider_solitare_win.mp3');
+        const looseGameSound = new Audio('sound/gta_v_wasted.mp3');
+        const rightAnswareSound = new Audio('sound/duolingo_right_answer_sound_effect.mp3');
+
+        //Variabler
+        var riktigAntallSvar = 0;
+        var feilAntallSvar = 0;
+        var antallLivIgjen = 5;
+        var riktigBox = Math.floor(Math.random()*2+1);
+
+
+        //Funksjoner:
+        function clickedBox1() {
+            velgVansklighetsGrad.innerHTML = "";    //Fjærner vansklighetsgrad valgene på spillstart(en boks ble trykket), hvis ingen ble valgt
+
+            if (riktigBox === 1) {                  // IF er TRUE, og kjører IF koden, hvis riktigBox tallet er 1
+                riktigSvar();
+            }
+            else {                                  // IF er FALSE, og kjører ELSE koden, hvis riktigBox taller er 2
+                feilSvar();
+            }
+        }
+
+        function clickedBox2() {
+            velgVansklighetsGrad.innerHTML = "";
+
+            if (riktigBox === 2) {
+                riktigSvar();
+            }
+            else {
+                feilSvar();
+            }
+        }
+
+        function riktigSvar() {
+            riktigAntallSvar++;
+            numberOfRightAnswares.innerHTML = `<p>Antall riktige: ${riktigAntallSvar}</p>`; //Oppdaterer Antall riktige svar
+            skjekkOmEktraLivSkalLeggesTil();
+            skjekkOmSpillErVunnet();
+            rightAnswareSound.play();
+            settNyRiktigBox();
+        }
+
+        function feilSvar() {
+            feilAntallSvar++;
+            numberOfWrongAnswares.innerHTML = `<p>Antall feil: ${feilAntallSvar}</p>`; //Oppdaterer Antall feil svar
+            fjærn1Liv();
+            skjekkOmSpillErTapt();
+            looseLifeSound.play();
+            settNyRiktigBox();
+        }
+
+        function settNyRiktigBox() {
+            riktigBox = Math.floor(Math.random()*2+1);
+            console.log(`Box${riktigBox} er neste riktig`); //cheating for å se riktig svar i consol loggen "Smiling Face with Horns"
+        }
+
+        //Trekker fra 1 på antallLivIgjen. Fjærner alle bildene og legger til et bilde for hver antallLivIgjen som er igjen
+        function fjærn1Liv() {
+            antallLivIgjen--;
+            numberOfLives.innerHTML = "";
+            for (var i = 0; i < antallLivIgjen; i++) {
+                numberOfLives.innerHTML += `<img src="images/Heart.png" alt="Liv">`;
+            }
+        }
+
+        function leggTil1Liv() {
+            antallLivIgjen++;
+            numberOfLives.innerHTML = ""; //Fjærner gamle bilder av liv
+            for (var i = 0; i < antallLivIgjen; i++) { //Kjører koden under en gang for hvert "liv" i antallLivIgjen variabelen
+                numberOfLives.innerHTML += `<img src="images/Heart.png" alt="Liv">`; //Legger til ett bilde av liv
+            }
+        }
+        
+        function skjekkOmEktraLivSkalLeggesTil() { //Legger til ekstra liv hvis antal rette svar er 3, 5, eller 7
+            if (riktigAntallSvar === 3 || riktigAntallSvar === 5 || riktigAntallSvar === 7){
+                leggTil1Liv();
+            }
+        }
+
+        function skjekkOmSpillErVunnet() {
+            if (riktigAntallSvar === 10) {
+                tittel.innerHTML = "Du er synsk!";
+                killCSS.style.display = "none";
+                numberOfLives.innerHTML = "";
+                numberOfRightAnswares.innerHTML = "";
+                numberOfWrongAnswares.innerHTML = "";
+                output.innerHTML = '<p>GRATULERER DU VANT SPILLET!</p>    <img src="images/fireworks.jpg" alt="fireworks">    <p><input type="button" value="Try again" onclick="lastInnSidePåNytt()"></p>'
+                winGameSound.play();
+            }
+        }
+        
+        function skjekkOmSpillErTapt() {
+            if (antallLivIgjen === 0) {
+                tittel.innerHTML = "Du er ikke synsk..";
+                killCSS.style.display = "none";
+                numberOfLives.innerHTML = "";
+                numberOfRightAnswares.innerHTML = "";
+                numberOfWrongAnswares.innerHTML = "";
+                output.innerHTML = '<img src="images/wasted.png" alt="wasted">    <p><input type="button" value="Try again" onclick="lastInnSidePåNytt()"></p>'
+                looseGameSound.play();
+            }
+        }
+
+        function lastInnSidePåNytt() { //Reset game (last inn nettsiden på nytt igjen)
+            window.location.reload();
+        }
+
+        function gameModeEasy() {
+            velgVansklighetsGrad.innerHTML = "";
+            numberOfLives.innerHTML = "";
+            antallLivIgjen = 12;
+            for (var i = 0; i < antallLivIgjen; i++) {
+                numberOfLives.innerHTML += `<img src="images/Heart.png" alt="Liv">`;
+            }
+        }
+
+        function gameModeNormal() {
+            velgVansklighetsGrad.innerHTML = "";
+        }
+
+        function gameModeHard() {
+            velgVansklighetsGrad.innerHTML = "";
+            numberOfLives.innerHTML = "";
+            antallLivIgjen = 3;
+            for (var i = 0; i < antallLivIgjen; i++) {
+                numberOfLives.innerHTML += `<img src="images/Heart.png" alt="Liv">`;
+            }
+        }
+
+        function gameModeCustom() {
+            if (custom.value > 0) { //Sørger for at spillet ikke kan starte med Enter før en verdi over 0 er satt
+                if (event.key === 'Enter') { //Starter spillet når Enter trykkes
+                    velgVansklighetsGrad.innerHTML = "";
+                    numberOfLives.innerHTML = "";
+                    antallLivIgjen = (custom.value);
+                    for (var i = 0; i < antallLivIgjen; i++) {
+                        numberOfLives.innerHTML += `<img src="images/Heart.png" alt="Liv">`;
+                    }
+                }
+            }
+        }
+
+        console.log(`Box${riktigBox} er riktig`); //cheating for å se riktig svar i consol loggen "Smiling Face with Horns"
+
+        //Events:
+        box1.onclick = clickedBox1;
+        box2.onclick = clickedBox2;
+
+        easy.onclick = gameModeEasy;
+        normal.onclick = gameModeNormal;
+        hard.onclick = gameModeHard;
+        custom.onkeyup = gameModeCustom;
+
+        </script>
+
+</body>
+</html>
