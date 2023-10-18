@@ -4,7 +4,7 @@
 The "Er du synsk?" project is a guessing game created for a JavaScript course submission. This web application challenges players to guess the correct box out of two options multiple times, while keeping track of their correct and incorrect guesses, and managing their lives throughout the game. Choose between various difficulty levels and try to get 10 correct guesses to win the game!
 
 ## Live Preview
-Preview the project live [here](https://augustelvevold.github.io/2021.10.11-school-js-submission/er-du-synsk.html).
+Preview the project live [here](https://augustelvevold.github.io/2021.10.11-school-js-submission-er-du-synsk/er-du-synsk.html).
 
 ## Usage
 Upon launching `er-du-synsk.html`, players are greeted with a title and a choice of difficulty levels: Easy, Normal, Hard, or Custom. 
